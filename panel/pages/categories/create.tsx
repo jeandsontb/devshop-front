@@ -1,31 +1,39 @@
 import { useFormik } from "formik";
+import { useRouter } from "next/router";
 import React from "react";
-import { Card } from "../../components/card/index";
 import { Layout } from "../../components/layout/index";
-import { Table } from "../../components/table";
 import { Title } from "../../components/title/index";
-import { useQuery } from "../../hooks/graphql";
+import { useMutation } from "../../hooks/graphql";
 
-const query = {
-  query: `{
-    getAllCategories {
-      id,
-      name,
+const CREATE_CATEGORY = `
+  mutation CategoryCreateInput($name: String!, $slug: String!) {
+    CategoryCreateInput (input: {
+      name: $name,
+      slug: $slug
+    }) {
+      id
+      name
       slug
     }
-  }`,
-};
+  }
+`;
 
 const Index = () => {
-  const { data, error } = useQuery(query);
+  const [data, createCategory] = useMutation(CREATE_CATEGORY);
+  const router = useRouter();
 
   const form = useFormik({
     initialValues: {
       name: "",
       slug: "",
     },
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const data = await createCategory(values);
+
+      console.log(data);
+      if (data && !data.errors) {
+        router.push("/categories");
+      }
     },
   });
 
