@@ -33,4 +33,4 @@ Table.Body = TableBody;
 Table.Tr = TableTr;
 Table.Td = TableTd;
 
-export default Table;
+export { Table };

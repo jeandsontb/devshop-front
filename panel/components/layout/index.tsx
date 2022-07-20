@@ -3,11 +3,7 @@ import { Menu } from "../menu";
 import { MdLabel, MdHome } from "react-icons/md";
 // import { useQuery } from '../../lib/graphql'
 
-type Props = {
-  children?: JSX.Element;
-};
-
-const Layout = ({ children }: Props) => {
+const Layout = ({ children }: any) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
