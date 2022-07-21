@@ -29,8 +29,6 @@ const Index = () => {
     },
     onSubmit: async (values) => {
       const data = await createCategory(values);
-
-      console.log(data);
       if (data && !data.errors) {
         router.push("/categories");
       }

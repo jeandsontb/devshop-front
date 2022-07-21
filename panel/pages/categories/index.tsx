@@ -76,12 +76,11 @@ const Index = () => {
                           </Table.Td>
 
                           <Table.Td>
-                            <a
-                              href="#"
-                              className="text-indigo-600 hover:text-indigo-900"
-                            >
-                              Edit
-                            </a>
+                            <Link href={`/categories/${item.id}/edit`}>
+                              <a className="text-indigo-600 hover:text-indigo-900">
+                                Edit
+                              </a>
+                            </Link>
                             {" | "}
                             <a
                               href="#"
