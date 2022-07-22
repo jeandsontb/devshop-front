@@ -4,6 +4,8 @@ import { useMutation, useQuery } from "../../../hooks/graphql";
 import { useFormik } from "formik";
 import { Layout } from "../../../components/layout";
 import { Title } from "../../../components/title";
+import { InputForm } from "../../../components/input";
+import { Button } from "../../../components/button";
 
 const UPDATE_CATEGORY = `
   mutation updateCategory($id: String!, $name: String!, $slug: String!) {
@@ -69,21 +71,25 @@ const Edit = () => {
         </div> */}
 
         <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+          <div className="align-middle inline-block bg-white p-12 min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
             <form onSubmit={form.handleSubmit}>
-              <input
-                type="text"
-                name="name"
-                onChange={form.handleChange}
+              <InputForm
+                label="Categoria"
+                placeholder="Digite o nome da categoria"
                 value={form.values.name}
-              />
-              <input
-                type="text"
-                name="slug"
                 onChange={form.handleChange}
-                value={form.values.slug}
+                name="name"
               />
-              <button type="submit">Criar categoria</button>
+
+              <InputForm
+                label="Slug"
+                placeholder="Digite o slug da categoria"
+                value={form.values.slug}
+                onChange={form.handleChange}
+                name="slug"
+                helpText="Slug é utilizado para url amigáveis."
+              />
+              <Button>Salvar categoria</Button>
             </form>
           </div>
         </div>

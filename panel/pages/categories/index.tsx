@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
-import { Card } from "../../components/card/index";
+import { AlertComponent } from "../../components/Alert";
+import { ButtonLink } from "../../components/button";
 import { Layout } from "../../components/layout/index";
 import { Table } from "../../components/table";
 import { Title } from "../../components/title/index";
@@ -33,19 +34,14 @@ const Index = () => {
       <Title>Gerenciar categorias</Title>
       <div className="flex flex-col mt-8">
         <div className="mb-6">
-          <Link href="/categories/create">
-            <a>Criar categoria</a>
-          </Link>
+          <ButtonLink href="/categories/create">Criar categoria</ButtonLink>
         </div>
 
         <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {data && data.getAllCategories && data.getAllCategories.length == 0 && (
-            <div
-              className="bg-orange-100 border-1-4 border-orange-500 text-orange-700 p-4"
-              role="alert"
-            >
+            <AlertComponent>
               <p>Nenhuma categoria criada até o momento!</p>
-            </div>
+            </AlertComponent>
           )}
 
           {data && data.getAllCategories && data.getAllCategories.length > 0 && (

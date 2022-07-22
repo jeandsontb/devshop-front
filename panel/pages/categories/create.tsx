@@ -1,6 +1,8 @@
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
 import React from "react";
+import { Button, ButtonOutLine } from "../../components/button";
+import { InputForm } from "../../components/input";
 import { Layout } from "../../components/layout/index";
 import { Title } from "../../components/title/index";
 import { useMutation } from "../../hooks/graphql";
@@ -40,25 +42,29 @@ const Index = () => {
       <Title>Gerenciar categorias</Title>
       <div className="flex flex-col mt-8">
         <div className="mb-6">
-          <a href="">Criar categoria</a>
+          <ButtonOutLine href={"/categories"}>Voltar</ButtonOutLine>
         </div>
 
         <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+          <div className="align-middle inline-block bg-white min-w-full p-12 shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
             <form onSubmit={form.handleSubmit}>
-              <input
-                type="text"
-                name="name"
-                onChange={form.handleChange}
+              <InputForm
+                label="Categoria"
+                placeholder="Digite o nome da categoria"
                 value={form.values.name}
-              />
-              <input
-                type="text"
-                name="slug"
                 onChange={form.handleChange}
-                value={form.values.slug}
+                name="name"
               />
-              <button type="submit">Criar categoria</button>
+
+              <InputForm
+                label="Slug"
+                placeholder="Digite o slug da categoria"
+                value={form.values.slug}
+                onChange={form.handleChange}
+                name="slug"
+                helpText="Slug é utilizado para url amigáveis."
+              />
+              <Button>Criar categoria</Button>
             </form>
           </div>
         </div>
