@@ -12,7 +12,6 @@ const GET_ALL_CATEGORIES = `{
   getAllCategories {
     id,
     name,
-    slug
   }
 }`;
 
@@ -32,7 +31,7 @@ const CREATE_PRODUCT = `
 `;
 
 const Index = () => {
-  const { data: categoryData, mutate } = useQuery(GET_ALL_CATEGORIES);
+  const { data: categoryData } = useQuery(GET_ALL_CATEGORIES);
   const [data, createProduct] = useMutation(CREATE_PRODUCT);
   const router = useRouter();
 
