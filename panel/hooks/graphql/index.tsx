@@ -14,7 +14,7 @@ const fetcher = async (query: any) => {
   );
 
   const json = await res.json();
-  return json.data;
+  return json;
 };
 
 const useQuery = (queryString: any) => {
@@ -22,7 +22,10 @@ const useQuery = (queryString: any) => {
     query: queryString,
   };
 
-  return useSWR(JSON.stringify(query), fetcher);
+  const allData = useSWR(JSON.stringify(query), fetcher);
+  const { data, ...rest } = allData;
+
+  return { data: data?.data, ...rest };
 };
 
 const useMutation = (query: any) => {

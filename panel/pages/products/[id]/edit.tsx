@@ -96,6 +96,11 @@ const Edit = () => {
 
         <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="align-middle inline-block bg-white p-12 min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+            {updatedData && !!updatedData.errors && (
+              <p className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                Ocorreu um erro ao salvar dados.
+              </p>
+            )}
             <form onSubmit={form.handleSubmit}>
               <InputForm
                 label="Produto"
