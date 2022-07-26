@@ -13,6 +13,8 @@ type InputProps = {
   helpText?: string | null;
   onChange: ChangeEventHandler<HTMLSelectElement>;
   options: IOptions[];
+  errorMessage?: string;
+  initial: IOptions;
 };
 
 const SelectForm = ({
@@ -23,6 +25,8 @@ const SelectForm = ({
   helpText = null,
   onChange,
   options = [],
+  errorMessage,
+  initial,
 }: InputProps) => {
   return (
     <div className="flex flex-wrap -mx-3 mb-6">
@@ -42,12 +46,18 @@ const SelectForm = ({
           name={name}
           onChange={onChange}
         >
+          {initial && <option value={initial.id}>{initial.name}</option>}
+
           {options.map((item) => (
             <option key={item.id} value={item.id}>
               {item.name}
             </option>
           ))}
         </select>
+        {errorMessage && (
+          <p className="text-red-500 text-xs italic">{errorMessage}</p>
+        )}
+
         {helpText && (
           <p className="text-gray-600 text-xs italic mb-4">{helpText}</p>
         )}

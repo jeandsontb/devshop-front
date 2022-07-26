@@ -6,7 +6,8 @@ import { InputForm } from "../../components/input";
 import { Layout } from "../../components/layout/index";
 import { SelectForm } from "../../components/select";
 import { Title } from "../../components/title/index";
-import { useMutation, useQuery } from "../../hooks/graphql";
+import { fetcher, useMutation, useQuery } from "../../hooks/graphql";
+import * as Yup from "yup";
 
 const GET_ALL_CATEGORIES = `{
   getAllCategories {
@@ -30,6 +31,40 @@ const CREATE_PRODUCT = `
   }
 `;
 
+const productSchema = Yup.object().shape({
+  name: Yup.string().min(3, "Mínimo 3 caracteres").required("Campo requerido"),
+  slug: Yup.string()
+    .min(3, "Mínimo 3 caracteres")
+    .required("Campo requerido")
+    .test(
+      "is-unique",
+      "Por favor, utilize outro slug. Este já está em uso.",
+      async (value) => {
+        const ret = await fetcher(
+          JSON.stringify({
+            query: `
+                query{
+                  getProductBySlug(slug:"${value}"){
+                    id
+                  }
+                }
+              `,
+          })
+        );
+        if (ret.errors) {
+          return true;
+        }
+        return false;
+      }
+    ),
+  description: Yup.string()
+    .min(10, "Mínimo 10 caracteres")
+    .required("Campo requerido"),
+  category: Yup.string()
+    .min(1, "Mínimo 3 caracteres")
+    .required("Campo requerido"),
+});
+
 const Index = () => {
   const { data: categoryData } = useQuery(GET_ALL_CATEGORIES);
   const [data, createProduct] = useMutation(CREATE_PRODUCT);
@@ -42,6 +77,7 @@ const Index = () => {
       description: "",
       category: "",
     },
+    validationSchema: productSchema,
     onSubmit: async (values) => {
       const data = await createProduct(values);
       if (data && !data.errors) {
@@ -80,6 +116,7 @@ const Index = () => {
                 value={form.values.name}
                 onChange={form.handleChange}
                 name="name"
+                errorMessage={form.errors.name}
               />
 
               <InputForm
@@ -89,6 +126,7 @@ const Index = () => {
                 onChange={form.handleChange}
                 name="slug"
                 helpText="Slug é utilizado para url amigáveis."
+                errorMessage={form.errors.slug}
               />
 
               <InputForm
@@ -97,6 +135,7 @@ const Index = () => {
                 value={form.values.description}
                 onChange={form.handleChange}
                 name="description"
+                errorMessage={form.errors.description}
               />
 
               <SelectForm
@@ -105,6 +144,8 @@ const Index = () => {
                 onChange={form.handleChange}
                 value={form.values.category}
                 options={options}
+                errorMessage={form.errors.category}
+                initial={{ id: "", name: "" }}
               />
               <Button>Criar produto</Button>
             </form>
