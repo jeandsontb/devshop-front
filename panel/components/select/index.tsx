@@ -37,7 +37,6 @@ const SelectForm = ({
         >
           {label}
         </label>
-
         <select
           className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           id={`id-${name}`}
@@ -49,15 +48,16 @@ const SelectForm = ({
           {initial && <option value={initial.id}>{initial.name}</option>}
 
           {options.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
+            <option key={item.id} value={item.id} selected={value === item.id}>
+              {item.name}({JSON.stringify(value === item.id)}(
+              {JSON.stringify(value + " aqui vai")}))
             </option>
           ))}
         </select>
+        {value} value
         {errorMessage && (
           <p className="text-red-500 text-xs italic">{errorMessage}</p>
         )}
-
         {helpText && (
           <p className="text-gray-600 text-xs italic mb-4">{helpText}</p>
         )}

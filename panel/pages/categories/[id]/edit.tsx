@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
-import { useMutation, useQuery } from "../../../hooks/graphql";
+import { fetcher, useMutation, useQuery } from "../../../hooks/graphql";
 import { useFormik } from "formik";
 import { Layout } from "../../../components/layout";
 import { Title } from "../../../components/title";
 import { InputForm } from "../../../components/input";
 import { Button } from "../../../components/button";
+import * as Yup from "yup";
+
+let id = "";
 
 const UPDATE_CATEGORY = `
   mutation updateCategory($id: String!, $name: String!, $slug: String!) {
@@ -23,6 +26,7 @@ const UPDATE_CATEGORY = `
 
 const Edit = () => {
   const router = useRouter();
+  id = router?.query?.id ? router.query.id.toString() : "";
   const { data } = useQuery(`
   query {
     getCategoryById(id: "${router.query.id}") {
@@ -33,6 +37,39 @@ const Edit = () => {
   }
   `);
 
+  const CategorySchema = Yup.object().shape({
+    name: Yup.string()
+      .min(3, "Mínimo 3 caracteres")
+      .required("Campo requerido"),
+    slug: Yup.string()
+      .min(3, "Mínimo 3 caracteres")
+      .required("Campo requerido")
+      .test(
+        "is-unique",
+        "Por favor, utilize outro slug. Este já está em uso.",
+        async (value) => {
+          const ret = await fetcher(
+            JSON.stringify({
+              query: `
+                  query{
+                    getCategoryBySlug(slug:"${value}"){
+                      id
+                    }
+                  }
+                `,
+            })
+          );
+          if (ret.errors) {
+            return true;
+          }
+          if (ret.data.getCategoryBySlug.id === id) {
+            return true;
+          }
+          return false;
+        }
+      ),
+  });
+
   const [updatedData, updateCategory] = useMutation(UPDATE_CATEGORY);
 
   const form = useFormik({
@@ -40,6 +77,7 @@ const Edit = () => {
       name: "",
       slug: "",
     },
+    validationSchema: CategorySchema,
     onSubmit: async (values) => {
       const category = {
         ...values,
@@ -78,6 +116,7 @@ const Edit = () => {
                 value={form.values.name}
                 onChange={form.handleChange}
                 name="name"
+                errorMessage={form.errors.name}
               />
 
               <InputForm
@@ -87,6 +126,7 @@ const Edit = () => {
                 onChange={form.handleChange}
                 name="slug"
                 helpText="Slug é utilizado para url amigáveis."
+                errorMessage={form.errors.slug}
               />
               <Button>Salvar categoria</Button>
             </form>

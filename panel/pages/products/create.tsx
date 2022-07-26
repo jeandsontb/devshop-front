@@ -145,7 +145,7 @@ const Index = () => {
                 value={form.values.category}
                 options={options}
                 errorMessage={form.errors.category}
-                initial={{ id: "", name: "" }}
+                initial={{ id: "", name: "Selecione..." }}
               />
               <Button>Criar produto</Button>
             </form>
