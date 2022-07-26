@@ -45,4 +45,4 @@ const useMutation = (query: any) => {
   return [data, mutate];
 };
 
-export { useQuery, useMutation };
+export { useQuery, useMutation, fetcher };

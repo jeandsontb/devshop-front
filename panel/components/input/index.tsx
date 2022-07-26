@@ -7,6 +7,7 @@ type InputProps = {
   value: string;
   name: string;
   helpText?: string | null;
+  errorMessage?: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -17,6 +18,7 @@ const InputForm = ({
   value,
   name,
   helpText = null,
+  errorMessage = "",
   onChange,
 }: InputProps) => {
   return (
@@ -37,6 +39,9 @@ const InputForm = ({
           name={name}
           onChange={onChange}
         />
+        {errorMessage && (
+          <p className="text-red-500 text-xs italic">{errorMessage}</p>
+        )}
         {helpText && (
           <p className="text-gray-600 text-xs italic mb-4">{helpText}</p>
         )}
