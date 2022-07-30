@@ -49,12 +49,11 @@ const SelectForm = ({
 
           {options.map((item) => (
             <option key={item.id} value={item.id} selected={value === item.id}>
-              {item.name}({JSON.stringify(value === item.id)}(
-              {JSON.stringify(value + " aqui vai")}))
+              {item.name}
             </option>
           ))}
         </select>
-        {value} value
+
         {errorMessage && (
           <p className="text-red-500 text-xs italic">{errorMessage}</p>
         )}

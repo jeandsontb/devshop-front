@@ -82,7 +82,8 @@ const Edit = () => {
       id, 		
       name, 
       slug,
-      description
+      description,
+      category
     }
   }
   `);
