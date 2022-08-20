@@ -1,32 +1,22 @@
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
-import { fetcher, useMutation, useQuery } from "../../../hooks/graphql";
+import React from "react";
+import { useUpload, useQuery } from "../../../hooks/graphql";
 import { useFormik } from "formik";
 import { Layout } from "../../../components/layout";
 import { Title } from "../../../components/title";
-import { InputForm } from "../../../components/input";
 import { Button } from "../../../components/button";
-import * as Yup from "yup";
 
-let id = "";
-
-const UPDATE_BRAND = `
-  mutation updateBrand($id: String!, $name: String!, $slug: String!) {
-    updateBrand (input: {
+const UPLOAD_BRAND_LOGO = `
+  mutation uploadBrandLogo($id: String!, $file: Upload!) {
+    uploadBrandLogo (
       id: $id,
-      name: $name,
-      slug: $slug
-    }) {
-      id,
-      name,
-      slug
-    }
-  }
+      file: $file
+    )
+}
 `;
 
 const Upload = () => {
   const router = useRouter();
-  id = router?.query?.id ? router.query.id.toString() : "";
   const { data } = useQuery(`
   query {
     getBrandById(id: "${router.query.id}") {
@@ -37,47 +27,13 @@ const Upload = () => {
   }
   `);
 
-  const BrandSchema = Yup.object().shape({
-    name: Yup.string()
-      .min(3, "Mínimo 3 caracteres")
-      .required("Campo requerido"),
-    slug: Yup.string()
-      .min(3, "Mínimo 3 caracteres")
-      .required("Campo requerido")
-      .test(
-        "is-unique",
-        "Por favor, utilize outro slug. Este já está em uso.",
-        async (value) => {
-          const ret = await fetcher(
-            JSON.stringify({
-              query: `
-                  query{
-                    getBrandBySlug(slug:"${value}"){
-                      id
-                    }
-                  }
-                `,
-            })
-          );
-          if (ret.errors) {
-            return true;
-          }
-          if (ret.data.getBrandBySlug.id === id) {
-            return true;
-          }
-          return false;
-        }
-      ),
-  });
-
-  const [updatedData, updateBrand] = useMutation(UPDATE_BRAND);
+  const [updatedData, updateBrand] = useUpload(UPLOAD_BRAND_LOGO);
 
   const form = useFormik({
     initialValues: {
-      name: "",
-      slug: "",
+      id: router.query.id,
+      file: "",
     },
-    validationSchema: BrandSchema,
     onSubmit: async (values) => {
       const brand = {
         ...values,
@@ -91,16 +47,12 @@ const Upload = () => {
     },
   });
 
-  useEffect(() => {
-    if (data && data.getBrandById) {
-      form.setFieldValue("name", data.getBrandById.name);
-      form.setFieldValue("slug", data.getBrandById.slug);
-    }
-  }, [data]);
-
   return (
     <Layout>
-      <Title>Editar marca</Title>
+      <Title>
+        Upload logo da marca{" "}
+        {data && data.getBrandById && data.getBrandById.name}{" "}
+      </Title>
       <div className="flex flex-col mt-8">
         <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           <div className="align-middle inline-block bg-white p-12 min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
@@ -110,24 +62,15 @@ const Upload = () => {
               </p>
             )}
             <form onSubmit={form.handleSubmit}>
-              <InputForm
-                label="Marca"
-                placeholder="Digite o nome da marca"
-                value={form.values.name}
-                onChange={form.handleChange}
-                name="name"
-                errorMessage={form.errors.name}
-              />
-
-              <InputForm
-                label="Slug"
-                placeholder="Digite o slug da marca"
-                value={form.values.slug}
-                onChange={form.handleChange}
-                name="slug"
-                helpText="Slug é utilizado para url amigáveis."
-                errorMessage={form.errors.slug}
-              />
+              <div className="flex flex-wrap -mx-3 mb-6">
+                <input
+                  type="file"
+                  name="file"
+                  onChange={(e) => {
+                    form.setFieldValue("file", e.currentTarget.files);
+                  }}
+                />
+              </div>
               <Button>Salvar marca</Button>
             </form>
           </div>
