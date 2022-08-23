@@ -11,7 +11,8 @@ const GET_ALL_BRANDS = `{
     getAllBrands {
       id,
       name,
-      slug
+      slug,
+      logo
     }
   }`;
 
@@ -56,8 +57,23 @@ const Index = () => {
                   {data &&
                     data.getAllBrands &&
                     data.getAllBrands.map(
-                      (item: { id: string; name: string; slug: string }) => (
+                      (item: {
+                        id: string;
+                        name: string;
+                        slug: string;
+                        logo: string;
+                      }) => (
                         <Table.Tr key={item.id}>
+                          <Table.Td>
+                            {item.logo && (
+                              <img
+                                src={item.logo}
+                                alt={item.name}
+                                className="h-20"
+                              />
+                            )}
+                          </Table.Td>
+
                           <Table.Td>
                             <div className="flex items-center">
                               <div>

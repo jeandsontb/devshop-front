@@ -10,10 +10,10 @@ const UPLOAD_BRAND_LOGO = `
   mutation uploadBrandLogo($id: String!, $file: Upload!) {
     uploadBrandLogo (
       id: $id,
-      file: $file
-    )
-}
-`;
+        file: $file
+      )
+    }
+  `;
 
 const Upload = () => {
   const router = useRouter();
@@ -66,8 +66,8 @@ const Upload = () => {
                 <input
                   type="file"
                   name="file"
-                  onChange={(e) => {
-                    form.setFieldValue("file", e.currentTarget.files);
+                  onChange={(evt) => {
+                    form.setFieldValue("file", evt.currentTarget.files?.[0]);
                   }}
                 />
               </div>
