@@ -21,12 +21,23 @@ const DELETE_BRAND = `
     deleteBrand (id: $id) 
   }`;
 
+const REMOVE_BRAND_LOGO = `
+  mutation removeBrandLogo($id: String!) {
+    removeBrandLogo (id: $id) 
+  }`;
+
 const Index = () => {
   const { data, mutate } = useQuery(GET_ALL_BRANDS);
   const [deleteData, deleteBrand] = useMutation(DELETE_BRAND);
+  const [removeBrandLogoData, deleteBrandLogo] = useMutation(REMOVE_BRAND_LOGO);
 
   const remove = async (id: string) => {
     await deleteBrand({ id });
+    mutate();
+  };
+
+  const removeBrandLogo = async (id: string) => {
+    await deleteBrandLogo({ id });
     mutate();
   };
 
@@ -88,6 +99,18 @@ const Index = () => {
                           </Table.Td>
 
                           <Table.Td>
+                            {item.logo && (
+                              <>
+                                <a
+                                  href="#"
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  onClick={() => removeBrandLogo(item.id)}
+                                >
+                                  Remove Logo
+                                </a>
+                                {" | "}
+                              </>
+                            )}
                             <Link href={`/brands/${item.id}/upload`}>
                               <a className="text-indigo-600 hover:text-indigo-900">
                                 Upload logo
