@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { InputForm } from "../components/input";
 import { useFormik } from "formik";
 import { Button } from "../components/button";
 import { useMutation } from "../hooks/graphql";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { AlertComponent } from "../components/Alert";
 
 const AUTH = `
   mutation auth($email: String!, $password: String!) {
@@ -20,6 +22,7 @@ const AUTH = `
 const Index = () => {
   const [authData, auth] = useMutation(AUTH);
   const router = useRouter();
+  const [signInError, setSignInError] = useState(false);
 
   const form = useFormik({
     initialValues: {
@@ -33,10 +36,24 @@ const Index = () => {
         localStorage.setItem("accessToken", data.data.auth.accessToken);
         router.push("/dashboard");
       } else {
-        console.log("error");
+        setSignInError(true);
       }
     },
   });
+
+  useEffect(() => {
+    let timer = setInterval(() => {
+      if (
+        localStorage.getItem("refreshToken") &&
+        localStorage.getItem("accessToken")
+      ) {
+        router.push("/dashboard");
+      }
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <div className="bg-grey-lighter min-h-screen flex flex-col">
@@ -62,6 +79,10 @@ const Index = () => {
               name="password"
               errorMessage={form.errors.password}
             />
+
+            {signInError && (
+              <AlertComponent>E-mail e/ou Senha inválidos</AlertComponent>
+            )}
 
             <Button>Entrar</Button>
           </form>
