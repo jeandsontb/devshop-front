@@ -4,21 +4,33 @@ import { AlertComponent } from "../../../components/Alert";
 import { Layout } from "../../../components/layout/index";
 import { Table } from "../../../components/table";
 import { Title } from "../../../components/title/index";
-import { useQuery } from "../../../hooks/graphql";
+import { useMutation, useQuery } from "../../../hooks/graphql";
 import { ptBR } from "date-fns/locale";
 import { formatDistance, subDays } from "date-fns";
 
+const INVALIDATE_USER_SESSION = `
+  mutation invalidateUserSession($id: String!) {
+    invalidateUserSession (id: $id) 
+  }`;
+
 const Sessions = () => {
   const router = useRouter();
-  const { data } = useQuery(`
+  const [deleteData, deleteUserSession] = useMutation(INVALIDATE_USER_SESSION);
+  const { data, mutate } = useQuery(`
   query {
     getAllUsersSessions(id: "${router.query.id}") {
       id,
       userAgent,
-      lastUsedAt
+      lastUsedAt,
+      active
     }
   }
   `);
+
+  const remove = async (id: string) => {
+    await deleteUserSession({ id });
+    mutate();
+  };
 
   return (
     <Layout>
@@ -52,6 +64,7 @@ const Sessions = () => {
                           id: string;
                           userAgent: string;
                           lastUsedAt: string;
+                          active: string;
                         }) => (
                           <Table.Tr key={item.id}>
                             <Table.Td>
@@ -78,13 +91,16 @@ const Sessions = () => {
                             </Table.Td>
 
                             <Table.Td>
-                              <a
-                                href="#"
-                                className="text-indigo-600 hover:text-indigo-900"
-                                // onClick={() => remove(item.id)}
-                              >
-                                Remove
-                              </a>
+                              {item.active && (
+                                <a
+                                  href="#"
+                                  className="text-indigo-600 hover:text-indigo-900"
+                                  onClick={() => remove(item.id)}
+                                >
+                                  Remove
+                                </a>
+                              )}
+                              {!item.active && <span>Inativo</span>}
                             </Table.Td>
                           </Table.Tr>
                         )
