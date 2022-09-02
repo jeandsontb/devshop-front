@@ -25,7 +25,30 @@ const CREATE_USER = `
 
 const UserSchema = Yup.object().shape({
   name: Yup.string().min(3, "Mínimo 3 caracteres").required("Campo requerido"),
-  email: Yup.string().email("E-mail inválido").required("Campo requerido"),
+  email: Yup.string()
+    .email("E-mail inválido")
+    .required("Campo requerido")
+    .test(
+      "is-unique",
+      "Por favor, utilize outro e-mail. Este já está em uso.",
+      async (value) => {
+        const ret = await fetcher(
+          JSON.stringify({
+            query: `
+              query{
+                getUserByEmail(email:"${value}"){
+                  id
+                }
+              }
+            `,
+          })
+        );
+        if (ret.errors) {
+          return true;
+        }
+        return false;
+      }
+    ),
   password: Yup.string()
     .min(6, "Mínimo 6 caracteres")
     .required("Campo requerido"),

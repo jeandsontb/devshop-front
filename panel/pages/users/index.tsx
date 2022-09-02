@@ -72,6 +72,12 @@ const Index = () => {
                           </Table.Td>
 
                           <Table.Td>
+                            <Link href={`/users/${item.id}/password`}>
+                              <a className="text-indigo-600 hover:text-indigo-900">
+                                Alterar senha
+                              </a>
+                            </Link>
+                            {" | "}
                             <Link href={`/users/${item.id}/edit`}>
                               <a className="text-indigo-600 hover:text-indigo-900">
                                 Edit

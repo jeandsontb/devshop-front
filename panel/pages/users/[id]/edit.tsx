@@ -11,12 +11,11 @@ import * as Yup from "yup";
 let id = "";
 
 const UPDATE_USER = `
-  mutation updateUser($id: String!, $name: String!, $email: String!, $password: String!, $role: String!) {
+  mutation updateUser($id: String!, $name: String!, $email: String!, $role: String!) {
     updateUser (input: {
       id: $id,
       name: $name,
       email: $email,
-      password: $password,
       role: $role
     }) {
       id
@@ -44,37 +43,35 @@ const Edit = () => {
     name: Yup.string()
       .min(3, "Mínimo 3 caracteres")
       .required("Campo requerido"),
-    email: Yup.string().email("E-mail inválido").required("Campo requerido"),
-    password: Yup.string()
-      .min(6, "Mínimo 6 caracteres")
-      .required("Campo requerido"),
-    // slug: Yup.string()
-    //   .min(3, "Mínimo 3 caracteres")
-    //   .required("Campo requerido")
-    //   .test(
-    //     "is-unique",
-    //     "Por favor, utilize outro slug. Este já está em uso.",
-    //     async (value) => {
-    //       const ret = await fetcher(
-    //         JSON.stringify({
-    //           query: `
-    //               query{
-    //                 getCategoryBySlug(slug:"${value}"){
-    //                   id
-    //                 }
-    //               }
-    //             `,
-    //         })
-    //       );
-    //       if (ret.errors) {
-    //         return true;
-    //       }
-    //       if (ret.data.getCategoryBySlug.id === id) {
-    //         return true;
-    //       }
-    //       return false;
-    //     }
-    //   ),
+    email: Yup.string()
+      .email("E-mail inválido")
+      .required("Campo requerido")
+      .test(
+        "is-unique",
+        "Por favor, utilize outro e-mail. Este já está em uso.",
+        async (value) => {
+          const ret = await fetcher(
+            JSON.stringify({
+              query: `
+              query{
+                getUserByEmail(email:"${value}"){
+                  id
+                }
+              }
+            `,
+            })
+          );
+          if (ret.errors) {
+            return true;
+          }
+
+          if (ret.data.getUserByEmail.id === id) {
+            return true;
+          }
+
+          return false;
+        }
+      ),
   });
 
   const [updatedData, updateUser] = useMutation(UPDATE_USER);
@@ -83,7 +80,6 @@ const Edit = () => {
     initialValues: {
       name: "",
       email: "",
-      password: "",
       role: "",
     },
     validationSchema: UserSchema,
@@ -137,15 +133,6 @@ const Edit = () => {
                 name="email"
                 // helpText="Slug é utilizado para url amigáveis."
                 errorMessage={form.errors.email}
-              />
-
-              <InputForm
-                label="Senha"
-                placeholder="Digite a senha"
-                value={form.values.password}
-                onChange={form.handleChange}
-                name="password"
-                errorMessage={form.errors.password}
               />
 
               <InputForm
