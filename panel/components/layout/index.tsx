@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { Menu } from "../menu";
 import { MdLabel, MdHome } from "react-icons/md";
-// import { useQuery } from '../../lib/graphql'
+import { useQuery } from "../../hooks/graphql";
+
+const GET_ME = `{
+  getMe {
+      id,
+      name,
+      email
+    }
+  }`;
 
 const Layout = ({ children }: any) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const { data } = useQuery(GET_ME);
 
   const close = () => {
     setSidebarOpen(false);

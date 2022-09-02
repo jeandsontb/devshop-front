@@ -79,6 +79,8 @@ const fetcher = async (query: any) => {
     }
   }
 
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
   // enviar para login
   window.location.href = "/";
   return null;
@@ -124,6 +126,9 @@ const uploader = async (formData: any) => {
       return json2;
     }
   }
+
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
 
   // enviar para login
   window.location.href = "/";
