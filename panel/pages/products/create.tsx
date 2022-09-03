@@ -8,7 +8,6 @@ import { SelectForm } from "../../components/select";
 import { Title } from "../../components/title/index";
 import { fetcher, useMutation, useQuery } from "../../hooks/graphql";
 import * as Yup from "yup";
-import { useState } from "react";
 import { Table } from "../../components/table";
 
 const GET_ALL_CATEGORIES = `{
@@ -19,7 +18,7 @@ const GET_ALL_CATEGORIES = `{
 }`;
 
 const CREATE_PRODUCT = `
-  mutation createProduct($name: String!, $slug: String!, $description: String!, $category: String!, $sku: String, $price: Float, $weight: Float, $optionsNames: [String!], $variations: [VariationInput!]) {
+  mutation createProduct($name: String!, $slug: String!, $description: String!, $category: String!, $sku: String, $price: Float, $weight: Float, $optionsNames: [String!], $stock: Int!, $variations: [VariationInput!]) {
     createProduct (input: {
       name: $name,
       slug: $slug,
@@ -29,6 +28,7 @@ const CREATE_PRODUCT = `
       price: $price,
       weight: $weight,
       optionsNames: $optionsNames,
+      stock: $stock,
       variations: $variations
     }) {
       id
@@ -48,12 +48,14 @@ type ObjectFormValues = {
   weight: number;
   optionName1: string;
   optionName2: string;
+  stock: number;
   variations: {
     optionName1: string;
     optionName2: string;
     sku: string;
     price: number;
     weight: number;
+    stock: number;
   }[];
   optionsNames: string[];
 };
@@ -103,7 +105,6 @@ const productSchema = Yup.object().shape({
 const Index = () => {
   const { data: categoryData } = useQuery(GET_ALL_CATEGORIES);
   const [data, createProduct] = useMutation(CREATE_PRODUCT);
-  const [variations, setVariations] = useState([] as ObjectVariations[]);
   const router = useRouter();
 
   const form = useFormik<ObjectFormValues>({
@@ -117,6 +118,7 @@ const Index = () => {
       weight: 0,
       optionName1: "",
       optionName2: "",
+      stock: 0,
       variations: [],
       optionsNames: [],
     },
@@ -126,12 +128,14 @@ const Index = () => {
         ...values,
         price: Number(values.price),
         weight: Number(values.weight),
+        stock: Number(values.stock),
         optionsNames: [values.optionName1, values.optionName2],
         variations: values.variations.map((variation) => {
           return {
             ...variation,
             price: Number(variation.price),
             weight: Number(variation.weight),
+            stock: Number(variation.stock),
           };
         }),
       };
@@ -150,15 +154,6 @@ const Index = () => {
       (item: { id: string; name: string }) => ({ id: item.id, name: item.name })
     );
   }
-
-  const addVariations = () => {
-    setVariations((old) => {
-      return [
-        ...old,
-        { optionName1: "", optionName2: "", sku: "", price: "", weight: "" },
-      ];
-    });
-  };
 
   return (
     <Layout>
@@ -241,6 +236,15 @@ const Index = () => {
                 errorMessage={form.errors.weight}
               />
 
+              <InputForm
+                label="Estoque do produto"
+                placeholder="Digite a quantidade de itens do produto"
+                value={String(form.values.stock)}
+                onChange={form.handleChange}
+                name="stock"
+                errorMessage={form.errors.stock}
+              />
+
               <h3>Variações / Grade de produtos</h3>
 
               <InputForm
@@ -280,6 +284,7 @@ const Index = () => {
                                   sku: "",
                                   price: 0,
                                   weight: 0,
+                                  stock: 0,
                                 })
                               }
                               style={{
@@ -304,6 +309,7 @@ const Index = () => {
                                 <Table.Th>SKU</Table.Th>
                                 <Table.Th>Preço</Table.Th>
                                 <Table.Th>Tamanho</Table.Th>
+                                <Table.Th>Estoque</Table.Th>
                                 <Table.Th></Table.Th>
                               </Table.Head>
 
@@ -371,6 +377,18 @@ const Index = () => {
                                           )}
                                           onChange={form.handleChange}
                                           name={`variations.${index}.weight`}
+                                        />
+                                      </Table.Td>
+
+                                      <Table.Td>
+                                        <InputForm
+                                          label="Estoque"
+                                          placeholder="Digite a quantidade"
+                                          value={String(
+                                            form.values.variations[index].stock
+                                          )}
+                                          onChange={form.handleChange}
+                                          name={`variations.${index}.stock`}
                                         />
                                       </Table.Td>
                                       <Table.Td>
