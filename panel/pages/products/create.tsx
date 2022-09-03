@@ -19,7 +19,7 @@ const GET_ALL_CATEGORIES = `{
 }`;
 
 const CREATE_PRODUCT = `
-  mutation createProduct($name: String!, $slug: String!, $description: String!, $category: String!, $sku: String, $price: Float, $weight: Float, $optionsNames: [String!]) {
+  mutation createProduct($name: String!, $slug: String!, $description: String!, $category: String!, $sku: String, $price: Float, $weight: Float, $optionsNames: [String!], $variations: [VariationInput!]) {
     createProduct (input: {
       name: $name,
       slug: $slug,
@@ -28,7 +28,8 @@ const CREATE_PRODUCT = `
       sku: $sku,
       price: $price,
       weight: $weight,
-      optionsNames: $optionsNames
+      optionsNames: $optionsNames,
+      variations: $variations
     }) {
       id
       name
@@ -36,6 +37,26 @@ const CREATE_PRODUCT = `
     }
   }
 `;
+
+type ObjectFormValues = {
+  name: string;
+  slug: string;
+  description: string;
+  category: string;
+  sku: string;
+  price: number;
+  weight: number;
+  optionName1: string;
+  optionName2: string;
+  variations: {
+    optionName1: string;
+    optionName2: string;
+    sku: string;
+    price: number;
+    weight: number;
+  }[];
+  optionsNames: string[];
+};
 
 type ObjectVariations = {
   optionName1: string;
@@ -85,7 +106,7 @@ const Index = () => {
   const [variations, setVariations] = useState([] as ObjectVariations[]);
   const router = useRouter();
 
-  const form = useFormik({
+  const form = useFormik<ObjectFormValues>({
     initialValues: {
       name: "",
       slug: "",
@@ -97,6 +118,7 @@ const Index = () => {
       optionName1: "",
       optionName2: "",
       variations: [],
+      optionsNames: [],
     },
     validationSchema: productSchema,
     onSubmit: async (values) => {
@@ -105,6 +127,13 @@ const Index = () => {
         price: Number(values.price),
         weight: Number(values.weight),
         optionsNames: [values.optionName1, values.optionName2],
+        variations: values.variations.map((variation) => {
+          return {
+            ...variation,
+            price: Number(variation.price),
+            weight: Number(variation.weight),
+          };
+        }),
       };
 
       const data = await createProduct(newValues);
@@ -243,6 +272,7 @@ const Index = () => {
                         return (
                           <div className="shadow">
                             <button
+                              type="button"
                               onClick={() =>
                                 arrayHelpers.push({
                                   optionName1: "",
@@ -323,9 +353,9 @@ const Index = () => {
                                         <InputForm
                                           label="Preço"
                                           placeholder="Digite o preço"
-                                          value={
+                                          value={String(
                                             form.values.variations[index].price
-                                          }
+                                          )}
                                           onChange={form.handleChange}
                                           name={`variations.${index}.price`}
                                         />
@@ -335,9 +365,9 @@ const Index = () => {
                                         <InputForm
                                           label="Peso"
                                           placeholder="Digite o peso"
-                                          value={
+                                          value={String(
                                             form.values.variations[index].weight
-                                          }
+                                          )}
                                           onChange={form.handleChange}
                                           name={`variations.${index}.weight`}
                                         />
