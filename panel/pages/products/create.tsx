@@ -304,6 +304,7 @@ const Index = () => {
                                 <Table.Th>SKU</Table.Th>
                                 <Table.Th>Preço</Table.Th>
                                 <Table.Th>Tamanho</Table.Th>
+                                <Table.Th></Table.Th>
                               </Table.Head>
 
                               <Table.Body>
@@ -371,6 +372,27 @@ const Index = () => {
                                           onChange={form.handleChange}
                                           name={`variations.${index}.weight`}
                                         />
+                                      </Table.Td>
+                                      <Table.Td>
+                                        <button
+                                          style={{
+                                            width: 35,
+                                            height: 35,
+                                            borderRadius: 20,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor: "#FF0000",
+                                            color: "#FFFFFF",
+                                            fontSize: 9,
+                                            fontWeight: "bold",
+                                          }}
+                                          type="button"
+                                          onClick={() =>
+                                            arrayHelpers.remove(index)
+                                          }
+                                        >
+                                          Excluir
+                                        </button>
                                       </Table.Td>
                                     </Table.Tr>
                                   )

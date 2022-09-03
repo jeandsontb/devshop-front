@@ -11,12 +11,12 @@ type ButtonProps = {
   type?: "submit" | "button" | "reset" | undefined;
 };
 
-const Button = ({ children, type = "submit", ...rest }: ButtonProps) => {
+const Button = ({ children, type = "submit", ...props }: ButtonProps) => {
   return (
     <button
       type={type}
       className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      {...rest}
+      {...props}
     >
       {children}
     </button>
