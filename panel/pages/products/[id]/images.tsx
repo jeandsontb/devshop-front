@@ -64,12 +64,12 @@ const Upload = () => {
     <Layout>
       <Title>Upload imagens do produto: {data?.getProductById?.name}</Title>
       <div className="flex flex-col mt-8">
-        {data?.getProductById?.images.length === 0 && (
+        {data?.getProductById?.images?.length === 0 && (
           <p className="rounded bg-white shadow py-2 px-4 mb-4">
             Nenhuma imagem adicionada ao produto.
           </p>
         )}
-        {data?.getProductById?.images.map((item: string) => (
+        {data?.getProductById?.images?.map((item: string) => (
           <div className="p-2 m-1 border border-gray-500 rounded hover:bg-gray-400">
             <img
               src={item}
